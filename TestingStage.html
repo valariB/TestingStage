@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 20px;
+      font-size: 13px;
+    }
+    .main {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 950px;
+      margin: 0 auto;
+    }
+    .container, .summary {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.08);
+      flex: 1;
+      min-width: 340px;
+    }
+    h1 {
+      font-size: 18px;
+      background-color: #004466;
+      color: #fff;
+      text-align: center;
+      padding: 8px;
+      border-radius: 5px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 6px;
+      display: block;
+    }
+    input, select {
+      width: 100%;
+      padding: 4px 6px;
+      margin-top: 3px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+    button {
+      background-color: #007b9e;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 13px;
+      margin-top: 10px;
+      border-radius: 4px;
+      width: 100%;
+      cursor: pointer;
+    }
+    .item-entry {
+      background-color: #f1f4f8;
+      border-left: 3px solid #004466;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .item-header {
+      padding: 8px;
+      font-weight: bold;
+      color: #004466;
+      cursor: pointer;
+      background-color: #e3e9ef;
+      border-radius: 4px 4px 0 0;
+    }
+    .item-body {
+      display: none;
+      padding: 10px;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+      background: #f1f1f1;
+      padding: 8px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    .summary h2 {
+      font-size: 15px;
+      margin-top: 20px;
+    }
+    .summary p {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .totals {
+      border-top: 1px solid #ccc;
+      margin-top: 15px;
+      padding-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Purchase Calculator</h1>
+  <div class="main">
+    <div class="container">
+      <label>Sales Tax Area</label>
+      <select id="globalTax">
+        <option disabled selected>Select</option>
+        <option value="6.5">Tampa (6.5%)</option>
+        <option value="7.5">Key West (7.5%)</option>
+      </select>
+
+      <label>Shipping (flat amount)</label>
+      <input type="number" id="shipping" step="0.01" placeholder="e.g. 25.00">
+      <button onclick="applyShipping()">Apply Shipping</button>
+
+      <div id="items-container"></div>
+      <button onclick="addItem()">+ Add Item</button>
+      <button onclick="calculateSummary()">Calculate Summary</button>
+      <button onclick="resetCalculator()">Reset</button>
+    </div>
+
+    <div class="summary" id="summary" style="display:none;">
+      <details>
+        <summary>Purchase Details</summary>
+        <div id="summary-content" style="margin-top:10px;"></div>
+      </details>
+      <details>
+        <summary>Summary by Item Category</summary>
+        <div id="category-summary" style="margin-top:10px;"></div>
+      </details>
+      <div class="totals" id="order-totals"></div>
+    </div>
+  </div>
+
+  <script>
+    let itemIndex = 0;
+
+    function addItem() {
+      const container = document.getElementById('items-container');
+      const div = document.createElement('div');
+      div.className = 'item-entry';
+      div.innerHTML = `
+        <div class="item-header" onclick="toggleItem(${itemIndex})" id="header-${itemIndex}">Item ${itemIndex + 1}</div>
+        <div class="item-body" id="body-${itemIndex}">
+          <label>Category</label>
+          <select id="category-${itemIndex}" onchange="updateHeader(${itemIndex})">
+            <option disabled selected>Select</option>
+            <optgroup label="GSC - Guest Stay Consumables">
+              <option>GS-Coffee/Coffee Supplies</option>
+              <option>GS-Paper Towels</option>
+              <option>GS-Toiletries-Soap/Shampoo/Lotion</option>
+              <option>GS-Laundry Supplies - Guest Use</option>
+              <option>GS-Trash Can Liners</option>
+              <option>GS-Tissues</option>
+              <option>GS-Kitchen Supplies (dish soap/detergent, sponges)</option>
+              <option>GS-Toilet Paper</option>
+              <option>GS-Water bottles</option>
+              <option>GS-Owner stay Fee</option>
+              <option>GS-Comp stays</option>
+              <option>GS-Spices</option>
+            </optgroup>
+            <optgroup label="US - Unit Supplies">
+              <option>US-Unit Bedroom Supplies</option>
+              <option>US-Unit Bathroom Supplies</option>
+              <option>US-Unit Kitchen Supplies</option>
+              <option>US-Unit Miscellaneous Supplies</option>
+              <option>US-Unit OnBoarding Supplies</option>
+              <option>US-Keurig</option>
+              <option>US-Point Central Locks/Thermostats</option>
+              <option>US-Exterior/Common Area</option>
+              <option>US-Furniture</option>
+            </optgroup>
+            <optgroup label="Linen">
+              <option>Linen - Sheets</option>
+              <option>Linen - Mattress Pads</option>
+              <option>Linen - Pillow Protectors</option>
+              <option>Linen - Shower Curtains</option>
+              <option>Linen - Bath Towels & Washcloths</option>
+              <option>Linen - Blankets</option>
+              <option>Linen - Duvets</option>
+              <option>Linen - Pool Towels</option>
+              <option>Linen - Pillows</option>
+              <option>Linen - 3rd Party Purchased</option>
+              <option>Linen - Bedskirts</option>
+              <option>Linen - Other</option>
+              <option>Linen - Kitchen Towels</option>
+            </optgroup>
+            <optgroup label="Reactive Supplies">
+              <option>Facilities Management Operating Expense</option>
+              <option>Reactive Supplies - Building</option>
+              <option>Reactive Supplies - Electrical</option>
+              <option>Reactive Supplies - Kitchen Equipment</option>
+              <option>Reactive Supplies - Fire & Safety</option>
+              <option>Reactive Supplies - Grounds</option>
+              <option>Reactive Supplies - HVAC</option>
+              <option>Reactive Supplies - Laundry</option>
+              <option>Reactive Supplies - Plumbing</option>
+              <option>Reactive Supplies - Pool</option>
+              <option>Reactive Supplies - Other</option>
+            </optgroup>
+          </select>
+          <label>Item Description (optional)</label>
+          <input type="text" id="description-${itemIndex}" />
+          <label>Quantity</label>
+          <input type="number" id="qty-${itemIndex}" step="1" min="1" value="1" />
+          <label>Item Price (pre-tax)</label>
+          <input type="number" id="price-${itemIndex}" step="0.01" />
+          <label>Discount (flat $ amount total for all units)</label>
+          <input type="number" id="discount-${itemIndex}" step="0.01" value="0" />
+          <label>Class (optional)</label>
+          <input type="text" id="class-${itemIndex}" />
+        </div>`;
+      container.appendChild(div);
+      itemIndex++;
+    }
+
+    function toggleItem(index) {
+      const body = document.getElementById(`body-${index}`);
+      body.style.display = (body.style.display === "none" || body.style.display === "") ? "block" : "none";
+    }
+
+    function updateHeader(index) {
+      const category = document.getElementById(`category-${index}`).value;
+      const header = document.getElementById(`header-${index}`);
+      header.innerText = `Item ${index + 1} — ${category}`;
+    }
+
+    function calculateSummary() {
+      const taxRate = parseFloat(document.getElementById('globalTax').value);
+      if (isNaN(taxRate)) {
+        alert("Please select a Sales Tax Area first.");
+        return;
+      }
+
+      const summaryDiv = document.getElementById('summary-content');
+      const categoryDiv = document.getElementById('category-summary');
+      summaryDiv.innerHTML = '';
+      categoryDiv.innerHTML = '';
+      document.getElementById('order-totals').innerHTML = '';
+
+      let results = {};
+      let categoryTotals = {};
+      let subtotal = 0, totalTax = 0, total = 0;
+
+      for (let i = 0; i < itemIndex; i++) {
+        const cat = document.getElementById(`category-${i}`).value;
+        const cls = document.getElementById(`class-${i}`).value.trim();
+        const qty = parseInt(document.getElementById(`qty-${i}`).value) || 1;
+        const price = parseFloat(document.getElementById(`price-${i}`).value);
+        const discount = parseFloat(document.getElementById(`discount-${i}`).value) || 0;
+        const desc = document.getElementById(`description-${i}`).value.trim();
+
+        if (!cat || isNaN(price)) continue;
+
+        const totalPrice = price * qty;
+        const net = Math.max(0, totalPrice - discount);
+        const tax = Math.round((net * taxRate / 100) * 100) / 100;
+        const lineTotal = net + tax;
+
+        subtotal += net;
+        totalTax += tax;
+        total += lineTotal;
+
+        const key = cls ? `${cls}||${cat}` : cat;
+        if (!results[key]) results[key] = [];
+        results[key].push({ qty, net, tax, total: lineTotal, desc });
+
+        if (!categoryTotals[cat]) categoryTotals[cat] = { qty: 0, net: 0, tax: 0, total: 0 };
+        categoryTotals[cat].qty += qty;
+        categoryTotals[cat].net += net;
+        categoryTotals[cat].tax += tax;
+        categoryTotals[cat].total += lineTotal;
+      }
+
+      for (const key in results) {
+        const [cls, cat] = key.includes('||') ? key.split('||') : ["[Unassigned]", key];
+        summaryDiv.innerHTML += `<p><strong>Class: ${cls}</strong><br><em>${cat}</em></p>`;
+        results[key].forEach(r => {
+          summaryDiv.innerHTML += `<p>${r.desc ? `Description: ${r.desc}<br>` : ''}Qty: ${r.qty} | Net: $${r.net.toFixed(2)} | Tax: $${r.tax.toFixed(2)} | Total: $${r.total.toFixed(2)}</p>`;
+        });
+      }
+
+      for (const cat in categoryTotals) {
+        const r = categoryTotals[cat];
+        categoryDiv.innerHTML += `<p><strong>${cat}</strong><br>Total Qty: ${r.qty} | Net: $${r.net.toFixed(2)} | Tax: $${r.tax.toFixed(2)} | Total: $${r.total.toFixed(2)}</p>`;
+      }
+
+      document.getElementById('order-totals').innerHTML = `
+        <p>Subtotal: $${subtotal.toFixed(2)}<br>
+        Tax Total: $${totalTax.toFixed(2)}<br>
+        Grand Total: $${total.toFixed(2)}</p>`;
+
+      document.getElementById('summary').style.display = 'block';
+    }
+
+    function applyShipping() {
+      calculateSummary(); // refresh summary first
+
+      const shippingAmount = parseFloat(document.getElementById('shipping').value) || 0;
+      if (shippingAmount <= 0) return;
+
+      const categoryDiv = document.getElementById('category-summary');
+      const totalsDiv = document.getElementById('order-totals');
+      const summary = document.getElementById('summary');
+
+      const categoryLines = Array.from(categoryDiv.querySelectorAll("p strong"));
+      const categories = categoryLines.map(el => el.innerText);
+
+      if (categories.length === 0) return;
+
+      const perCategoryShipping = shippingAmount / categories.length;
+      let grandTotalAddition = 0;
+
+      categoryLines.forEach(el => {
+        const catText = el.parentNode.innerHTML;
+        const newHTML = catText + `<br>Shipping: $${perCategoryShipping.toFixed(2)}`;
+        const totalMatch = catText.match(/Total: \$([\d.]+)/);
+        if (totalMatch) {
+          const oldTotal = parseFloat(totalMatch[1]);
+          const newTotal = oldTotal + perCategoryShipping;
+          grandTotalAddition += perCategoryShipping;
+          el.parentNode.innerHTML = newHTML.replace(/Total: \$[\d.]+/, `Total: $${newTotal.toFixed(2)}`);
+        }
+      });
+
+      const totalText = totalsDiv.innerHTML;
+      const match = totalText.match(/Grand Total: \$([\d.]+)/);
+      if (match) {
+        const grand = parseFloat(match[1]) + grandTotalAddition;
+        totalsDiv.innerHTML += `<p>Shipping Total: $${shippingAmount.toFixed(2)}<br><strong>Updated Grand Total: $${grand.toFixed(2)}</strong></p>`;
+      }
+
+      summary.style.display = 'block';
+    }
+
+    function resetCalculator() {
+      document.getElementById('items-container').innerHTML = '';
+      document.getElementById('summary').style.display = 'none';
+      document.getElementById('shipping').value = '';
+      itemIndex = 0;
+      addItem();
+    }
+
+    window.onload = addItem;
+  </script>
+</body>
+</html>
