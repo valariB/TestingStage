@@ -12,12 +12,14 @@
       font-size: 13px;
     }
 
+    /* (kept in case you add optgroups elsewhere) */
     select optgroup {
-  font-weight: bold;
-  color: #004466;
-  background-color: #e0eaf3;
-  padding: 4px 6px;
-}
+      font-weight: bold;
+      color: #004466;
+      background-color: #e0eaf3;
+      padding: 4px 6px;
+    }
+
     .main {
       display: flex;
       flex-wrap: wrap;
@@ -94,10 +96,6 @@
       border-radius: 4px;
       margin-top: 20px;
     }
-    .summary h2 {
-      font-size: 15px;
-      margin-top: 20px;
-    }
     .summary p {
       font-size: 13px;
       line-height: 1.4;
@@ -112,6 +110,7 @@
 </head>
 <body>
   <h1>Purchase Calculator</h1>
+
   <div class="main">
     <div class="container">
       <label>Sales Tax Area</label>
@@ -147,221 +146,209 @@
   <script>
     let itemIndex = 0;
 
+    /* -------------------- item entry -------------------- */
     function addItem() {
       const container = document.getElementById('items-container');
       const div = document.createElement('div');
       div.className = 'item-entry';
       div.innerHTML = `
-        <div class="item-header" onclick="toggleItem(${itemIndex})" id="header-${itemIndex}">Item ${itemIndex + 1}</div>
+        <div class="item-header" onclick="toggleItem(${itemIndex})" id="header-${itemIndex}">
+          Item ${itemIndex + 1}
+        </div>
         <div class="item-body" id="body-${itemIndex}">
           <label>Category</label>
           <select id="category-${itemIndex}" onchange="updateHeader(${itemIndex})">
             <option disabled selected>Select</option>
-            <optgroup label="GSC - Guest Stay Consumables">
-              <option>GS-Coffee/Coffee Supplies</option>
-              <option>GS-Paper Towels</option>
-              <option>GS-Toiletries-Soap/Shampoo/Lotion</option>
-              <option>GS-Laundry Supplies - Guest Use</option>
-              <option>GS-Trash Can Liners</option>
-              <option>GS-Tissues</option>
-              <option>GS-Kitchen Supplies (dish soap/detergent, sponges)</option>
-              <option>GS-Toilet Paper</option>
-              <option>GS-Water bottles</option>
-              <option>GS-Owner stay Fee</option>
-              <option>GS-Comp stays</option>
-              <option>GS-Spices</option>
-            </optgroup>
-            <optgroup label="US - Unit Supplies">
-              <option>US-Unit Bedroom Supplies</option>
-              <option>US-Unit Bathroom Supplies</option>
-              <option>US-Unit Kitchen Supplies</option>
-              <option>US-Unit Miscellaneous Supplies</option>
-              <option>US-Unit OnBoarding Supplies</option>
-              <option>US-Keurig</option>
-              <option>US-Point Central Locks/Thermostats</option>
-              <option>US-Exterior/Common Area</option>
-              <option>US-Furniture</option>
-            </optgroup>
-            <optgroup label="Linen">
-              <option>Linen - Sheets</option>
-              <option>Linen - Mattress Pads</option>
-              <option>Linen - Pillow Protectors</option>
-              <option>Linen - Shower Curtains</option>
-              <option>Linen - Bath Towels & Washcloths</option>
-              <option>Linen - Blankets</option>
-              <option>Linen - Duvets</option>
-              <option>Linen - Pool Towels</option>
-              <option>Linen - Pillows</option>
-              <option>Linen - 3rd Party Purchased</option>
-              <option>Linen - Bedskirts</option>
-              <option>Linen - Other</option>
-              <option>Linen - Kitchen Towels</option>
-            </optgroup>
-            <optgroup label="Reactive Supplies">
-              <option>Facilities Management Operating Expense</option>
-              <option>Reactive Supplies - Building</option>
-              <option>Reactive Supplies - Electrical</option>
-              <option>Reactive Supplies - Kitchen Equipment</option>
-              <option>Reactive Supplies - Fire & Safety</option>
-              <option>Reactive Supplies - Grounds</option>
-              <option>Reactive Supplies - HVAC</option>
-              <option>Reactive Supplies - Laundry</option>
-              <option>Reactive Supplies - Plumbing</option>
-              <option>Reactive Supplies - Pool</option>
-              <option>Reactive Supplies - Other</option>
-            </optgroup>
+
+            <!-- GSC -->
+            <option disabled style="font-weight:bold;background:#e0eaf3;color:#004466;">--- GSC - Guest Stay Consumables ---</option>
+            <option>GS-Coffee/Coffee Supplies</option>
+            <option>GS-Paper Towels</option>
+            <option>GS-Toiletries-Soap/Shampoo/Lotion</option>
+            <option>GS-Laundry Supplies - Guest Use</option>
+            <option>GS-Trash Can Liners</option>
+            <option>GS-Tissues</option>
+            <option>GS-Kitchen Supplies (dish soap/detergent, sponges)</option>
+            <option>GS-Toilet Paper</option>
+            <option>GS-Water bottles</option>
+            <option>GS-Owner stay Fee</option>
+            <option>GS-Comp stays</option>
+            <option>GS-Spices</option>
+
+            <!-- US -->
+            <option disabled style="font-weight:bold;background:#e0eaf3;color:#004466;">--- US - Unit Supplies ---</option>
+            <option>US-Unit Bedroom Supplies</option>
+            <option>US-Unit Bathroom Supplies</option>
+            <option>US-Unit Kitchen Supplies</option>
+            <option>US-Unit Miscellaneous Supplies</option>
+            <option>US-Unit OnBoarding Supplies</option>
+            <option>US-Keurig</option>
+            <option>US-Point Central Locks/Thermostats</option>
+            <option>US-Exterior/Common Area</option>
+            <option>US-Furniture</option>
+
+            <!-- Linen -->
+            <option disabled style="font-weight:bold;background:#e0eaf3;color:#004466;">--- Linen ---</option>
+            <option>Linen - Sheets</option>
+            <option>Linen - Mattress Pads</option>
+            <option>Linen - Pillow Protectors</option>
+            <option>Linen - Shower Curtains</option>
+            <option>Linen - Bath Towels & Washcloths</option>
+            <option>Linen - Blankets</option>
+            <option>Linen - Duvets</option>
+            <option>Linen - Pool Towels</option>
+            <option>Linen - Pillows</option>
+            <option>Linen - 3rd Party Purchased</option>
+            <option>Linen - Bedskirts</option>
+            <option>Linen - Other</option>
+            <option>Linen - Kitchen Towels</option>
+
+            <!-- Reactive -->
+            <option disabled style="font-weight:bold;background:#e0eaf3;color:#004466;">--- Reactive Supplies ---</option>
+            <option>Facilities Management Operating Expense</option>
+            <option>Reactive Supplies - Building</option>
+            <option>Reactive Supplies - Electrical</option>
+            <option>Reactive Supplies - Kitchen Equipment</option>
+            <option>Reactive Supplies - Fire & Safety</option>
+            <option>Reactive Supplies - Grounds</option>
+            <option>Reactive Supplies - HVAC</option>
+            <option>Reactive Supplies - Laundry</option>
+            <option>Reactive Supplies - Plumbing</option>
+            <option>Reactive Supplies - Pool</option>
+            <option>Reactive Supplies - Other</option>
           </select>
+
           <label>Item Description (optional)</label>
-          <input type="text" id="description-${itemIndex}" />
+          <input type="text" id="description-${itemIndex}" placeholder="e.g., 12-pack of paper towels">
+
           <label>Quantity</label>
-          <input type="number" id="qty-${itemIndex}" step="1" min="1" value="1" />
+          <input type="number" id="qty-${itemIndex}" step="1" min="1" value="1">
+
           <label>Item Price (pre-tax)</label>
-          <input type="number" id="price-${itemIndex}" step="0.01" />
+          <input type="number" id="price-${itemIndex}" step="0.01">
+
           <label>Discount (flat $ amount total for all units)</label>
-          <input type="number" id="discount-${itemIndex}" step="0.01" value="0" />
+          <input type="number" id="discount-${itemIndex}" step="0.01" value="0">
+
           <label>Class (optional)</label>
-          <input type="text" id="class-${itemIndex}" />
+          <input type="text" id="class-${itemIndex}" placeholder="e.g., Gemma 19">
         </div>`;
       container.appendChild(div);
       itemIndex++;
     }
 
-    function toggleItem(index) {
-      const body = document.getElementById(`body-${index}`);
-      body.style.display = (body.style.display === "none" || body.style.display === "") ? "block" : "none";
+    function toggleItem(i) {
+      const body = document.getElementById(`body-${i}`);
+      body.style.display = (body.style.display === 'none' || body.style.display === '') ? 'block' : 'none';
+    }
+    function updateHeader(i) {
+      const cat = document.getElementById(`category-${i}`).value;
+      document.getElementById(`header-${i}`).innerText = `Item ${i + 1} — ${cat}`;
     }
 
-    function updateHeader(index) {
-      const category = document.getElementById(`category-${index}`).value;
-      const header = document.getElementById(`header-${index}`);
-      header.innerText = `Item ${index + 1} — ${category}`;
+    /* -------------------- summary logic -------------------- */
+    function calculateSummary() {
+      const taxRate = parseFloat(document.getElementById('globalTax').value);
+      if (isNaN(taxRate)) { alert('Please select a Sales Tax Area first.'); return; }
+
+      const summaryDiv   = document.getElementById('summary-content');
+      const categoryDiv  = document.getElementById('category-summary');
+      const totalsDiv    = document.getElementById('order-totals');
+
+      summaryDiv.innerHTML  = '';
+      categoryDiv.innerHTML = '';
+      totalsDiv.innerHTML   = '';
+
+      let results={}, cats={}, sub=0, taxTot=0, grand=0;
+
+      for (let i=0;i<itemIndex;i++) {
+        const cat  = document.getElementById(`category-${i}`).value;
+        const cls  = document.getElementById(`class-${i}`).value.trim();
+        const qty  = +document.getElementById(`qty-${i}`).value || 1;
+        const price= +document.getElementById(`price-${i}`).value;
+        const disc = +document.getElementById(`discount-${i}`).value || 0;
+        const desc = document.getElementById(`description-${i}`).value.trim();
+        if (!cat || isNaN(price)) continue;
+
+        const totalPrice = price*qty;
+        const net  = Math.max(0, totalPrice-disc);
+        const tax  = Math.round(net*taxRate)/100;
+        const line = net+tax;
+
+        sub    += net;
+        taxTot += tax;
+        grand  += line;
+
+        const key = cls ? `${cls}||${cat}` : cat;
+        (results[key]??=[]).push({qty,net,tax,total:line,desc});
+
+        cats[cat] ??= {qty:0,net:0,tax:0,total:0};
+        cats[cat].qty   += qty;
+        cats[cat].net   += net;
+        cats[cat].tax   += tax;
+        cats[cat].total += line;
+      }
+
+      /* detail by class */
+      for (const key in results) {
+        const [cls,cat]= key.includes('||')?key.split('||'):['[Unassigned]',key];
+        summaryDiv.innerHTML += `<p><strong>Class: ${cls}</strong><br><em>${cat}</em></p>`;
+        results[key].forEach(r=>{
+          summaryDiv.innerHTML += `<p>${r.desc?`Description: ${r.desc}<br>`:''}Qty: ${r.qty} | Net: $${r.net.toFixed(2)} | Tax: $${r.tax.toFixed(2)} | Total: $${r.total.toFixed(2)}</p>`;
+        });
+      }
+
+      /* summary by category */
+      for (const cat in cats){
+        const r=cats[cat];
+        categoryDiv.innerHTML += `<p><strong>${cat} : QTY ${r.qty}</strong><br>Net: $${r.net.toFixed(2)} | Tax: $${r.tax.toFixed(2)} | <span class="shipping-line"></span>Total: $${r.total.toFixed(2)}</p>`;
+      }
+
+      totalsDiv.innerHTML = `<p>Subtotal: $${sub.toFixed(2)}<br>Tax Total: $${taxTot.toFixed(2)}</p>`;
+      document.getElementById('summary').style.display='block';
     }
 
-   function calculateSummary() {
-  const taxRate = parseFloat(document.getElementById('globalTax').value);
-  if (isNaN(taxRate)) {
-    alert("Please select a Sales Tax Area first.");
-    return;
-  }
+    /* -------------------- shipping logic -------------------- */
+    function applyShipping(){
+      calculateSummary();                         // refresh
+      const shipAmt = +document.getElementById('shipping').value || 0;
+      if (shipAmt<=0) return;
 
-  const summaryDiv = document.getElementById('summary-content');
-  const categoryDiv = document.getElementById('category-summary');
-  summaryDiv.innerHTML = '';
-  categoryDiv.innerHTML = '';
-  document.getElementById('order-totals').innerHTML = '';
+      const blocks = [...document.getElementById('category-summary').querySelectorAll('p')];
+      const catCount = blocks.length;
+      if (!catCount) return;
 
-  let results = {};
-  let categoryTotals = {};
-  let subtotal = 0, totalTax = 0, total = 0;
+      const perCat = shipAmt/catCount;
+      let addToGrand = 0;
 
-  for (let i = 0; i < itemIndex; i++) {
-    const cat = document.getElementById(`category-${i}`).value;
-    const cls = document.getElementById(`class-${i}`).value.trim();
-    const qty = parseInt(document.getElementById(`qty-${i}`).value) || 1;
-    const price = parseFloat(document.getElementById(`price-${i}`).value);
-    const discount = parseFloat(document.getElementById(`discount-${i}`).value) || 0;
-    const desc = document.getElementById(`description-${i}`).value.trim();
+      blocks.forEach(block=>{
+        const totalMatch = block.innerHTML.match(/Total: \$([\d.]+)/);
+        const shipSpan   = block.querySelector('.shipping-line');
+        if (totalMatch && shipSpan){
+          const oldT = +totalMatch[1];
+          const newT = oldT+perCat;
+          shipSpan.innerHTML = `Shipping: $${perCat.toFixed(2)} | `;
+          block.innerHTML = block.innerHTML.replace(/Total: \$[\d.]+/,`Total: $${newT.toFixed(2)}`);
+          addToGrand += perCat;
+        }
+      });
 
-    if (!cat || isNaN(price)) continue;
+      const totalsDiv = document.getElementById('order-totals');
+      const sub  = +totalsDiv.innerHTML.match(/Subtotal: \$([\d.]+)/)[1];
+      const tax  = +totalsDiv.innerHTML.match(/Tax Total: \$([\d.]+)/)[1];
+      const newGrand = sub+tax+addToGrand;
 
-    const totalPrice = price * qty;
-    const net = Math.max(0, totalPrice - discount);
-    const tax = Math.round((net * taxRate / 100) * 100) / 100;
-    const lineTotal = net + tax;
-
-    subtotal += net;
-    totalTax += tax;
-    total += lineTotal;
-
-    const key = cls ? `${cls}||${cat}` : cat;
-    if (!results[key]) results[key] = [];
-    results[key].push({ qty, net, tax, total: lineTotal, desc });
-
-    if (!categoryTotals[cat]) categoryTotals[cat] = { qty: 0, net: 0, tax: 0, total: 0 };
-    categoryTotals[cat].qty += qty;
-    categoryTotals[cat].net += net;
-    categoryTotals[cat].tax += tax;
-    categoryTotals[cat].total += lineTotal;
-  }
-
-  for (const key in results) {
-    const [cls, cat] = key.includes('||') ? key.split('||') : ["[Unassigned]", key];
-    summaryDiv.innerHTML += `<p><strong>Class: ${cls}</strong><br><em>${cat}</em></p>`;
-    results[key].forEach(r => {
-      summaryDiv.innerHTML += `<p>${r.desc ? `Description: ${r.desc}<br>` : ''}Qty: ${r.qty} | Net: $${r.net.toFixed(2)} | Tax: $${r.tax.toFixed(2)} | Total: $${r.total.toFixed(2)}</p>`;
-    });
-  }
-
-  for (const cat in categoryTotals) {
-    const r = categoryTotals[cat];
-    categoryDiv.innerHTML += `
-      <p><strong>${cat} : QTY ${r.qty}</strong><br>
-      Net: $${r.net.toFixed(2)} | Tax: $${r.tax.toFixed(2)} | <span class="shipping-line"></span>Total: $${r.total.toFixed(2)}</p>`;
-  }
-
-  document.getElementById('order-totals').innerHTML = `
-    <p>Subtotal: $${subtotal.toFixed(2)}<br>
-    Tax Total: $${totalTax.toFixed(2)}</p>`;
-
-  document.getElementById('summary').style.display = 'block';
-}
-
-    function applyShipping() {
-  calculateSummary(); // refresh summary first
-
-  const shippingAmount = parseFloat(document.getElementById('shipping').value) || 0;
-  if (shippingAmount <= 0) return;
-
-  const categoryDiv = document.getElementById('category-summary');
-  const totalsDiv = document.getElementById('order-totals');
-  const summary = document.getElementById('summary');
-
-  const categoryBlocks = Array.from(categoryDiv.querySelectorAll("p"));
-  const categories = categoryBlocks.map(block => {
-    const match = block.innerHTML.match(/<strong>(.*?) : QTY \d+<\/strong>/);
-    return match ? match[1] : null;
-  }).filter(Boolean);
-
-  if (categories.length === 0) return;
-
-  const perCategoryShipping = shippingAmount / categories.length;
-  let grandTotalAddition = 0;
-
-  categoryBlocks.forEach(block => {
-    const totalMatch = block.innerHTML.match(/Total: \$([\d.]+)/);
-    const shippingLine = block.querySelector(".shipping-line");
-
-    if (totalMatch && shippingLine) {
-      const oldTotal = parseFloat(totalMatch[1]);
-      const newTotal = oldTotal + perCategoryShipping;
-      shippingLine.innerHTML = `Shipping: $${perCategoryShipping.toFixed(2)} | `;
-      block.innerHTML = block.innerHTML.replace(/Total: \$[\d.]+/, `Total: $${newTotal.toFixed(2)}`);
-      grandTotalAddition += perCategoryShipping;
+      totalsDiv.innerHTML += `<p>Shipping Total: $${shipAmt.toFixed(2)}<br><strong>Grand Total: $${newGrand.toFixed(2)}</strong></p>`;
     }
-  });
 
-  // Append final total breakdown
-  const totalText = totalsDiv.innerHTML;
-  const match = totalText.match(/Tax Total: \$([\d.]+)/);
-  if (match) {
-    const grand = parseFloat(match[1]) + parseFloat(totalText.match(/Subtotal: \$([\d.]+)/)[1]) + grandTotalAddition;
-    totalsDiv.innerHTML += `
-      <p>Shipping Total: $${shippingAmount.toFixed(2)}<br>
-      <strong>Grand Total: $${grand.toFixed(2)}</strong></p>`;
-  }
-
-  summary.style.display = 'block';
-}
-    
-
-    function resetCalculator() {
-      document.getElementById('items-container').innerHTML = '';
-      document.getElementById('summary').style.display = 'none';
-      document.getElementById('shipping').value = '';
-      itemIndex = 0;
+    /* -------------------- misc -------------------- */
+    function resetCalculator(){
+      document.getElementById('items-container').innerHTML='';
+      document.getElementById('summary').style.display='none';
+      document.getElementById('shipping').value='';
+      itemIndex=0;
       addItem();
     }
-
     window.onload = addItem;
   </script>
 </body>
